@@ -4,11 +4,11 @@ function [data_out] = preprocessing(data,skew_mode)
     max_skew_angle = 45;
     
     if skew_mode == 1
-        data=skew_data(data,min_skew_angle,max_skew_angle);
+        data_out=skew_data(data(:,1:size(data,2)-1),min_skew_angle,max_skew_angle);
+        
+    else
+        data_out = normalize(data,1);
     end
-    
-    data_out = normalize(data,1);
-
 end
 
 
