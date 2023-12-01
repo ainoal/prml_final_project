@@ -11,29 +11,28 @@ file_names = files.Files;
 num_files = length(file_names);
 full_data = {};
 
-k = 3;
+k = 10;
 
 for i = 1:num_files
     sample = load(file_names{i});
     sample = preprocessing(sample.pos,0);
     %ceil(i/100)-1 -> add class - name corresponds to written number
-    full_data{i} = [sample, (ceil(i/100)-1)*ones(size(sample,1),1)];   
+    full_data{i} = [sample, (ceil(i/100))*ones(size(sample,1),1)];   
 end
 
 for i = 1:num_files
     sample = preprocessing(full_data{i},1);
-    full_data{num_files+i} = [sample, (ceil(i/100)-1)*ones(size(sample,1),1)]; 
+    full_data{num_files+i} = [sample, (ceil(i/100))*ones(size(sample,1),1)]; 
 end
 
 %full_data = normalize_for_time(full_data);
 time_normalized_data = normalize_for_time(full_data);
-
-
-shuff_data = full_data(randperm(numel(full_data)));
-data = shuff_data{1};
-[test_X,test_Y,train_X,train_Y] = split_data(data(:,1:3),data(:,4:4),0.8);
-class_res = classification(train_Y,train_X,test_X,3);
-
+flat_data = flatten_data(time_normalized_data);
+merged_data = merge_data(flat_data);
+shuff_data = merged_data(randperm(numel(merged_data)));
+[test_X,test_Y,train_X,train_Y] = split_data(merged_data(:,1:end-1),merged_data(:,end:end),0.8);
+class_res = classification(train_Y,train_X,test_X,k);
+acc = calc_err(class_res,test_Y);
 %class_res = classification()
 
 
@@ -85,6 +84,25 @@ function time_normalized_data = normalize_for_time(full_data)
             time_normalized_data{i} = data_matrix;
         end
         % set time_normalized_data{i}
+    end
+end
+
+function [flat_data] =  flatten_data(data_cell_array)
+    flat_data = [];
+    for i = 1:length(data_cell_array)
+        data = data_cell_array{i};
+        data = data(:,1:3);
+        data(:,2:2) = [];
+        label = data_cell_array{i}(1,4);
+        flat_data{i} = reshape(data',1,[]);
+        flat_data{i}(1,end+1) = label;
+    end    
+end
+
+function[merged_data] = merge_data(flat_data)
+    merged_data=[];
+    for i = 1:length(flat_data)
+        merged_data(i,:) = flat_data{i};
     end
 end
 

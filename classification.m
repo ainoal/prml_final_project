@@ -10,7 +10,7 @@ function [testclass] = classification(trainclass, traindata, testdata, k)
         end
         near_neigh = [dist,trainclass];
         near_neigh = sortrows(near_neigh);
-        c= [0;0;0;0;0;0;0;0;0];
+        c= [0 0 0 0 0 0 0 0 0 0];
         
         for l = 1:k
             c(near_neigh(l,2)) = c(near_neigh(l,2))+1;
