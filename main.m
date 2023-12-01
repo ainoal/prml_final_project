@@ -25,6 +25,10 @@ for i = 1:num_files
     full_data{num_files+i} = [sample, (ceil(i/100)-1)*ones(size(sample,1),1)]; 
 end
 
+%full_data = normalize_for_time(full_data);
+time_normalized_data = normalize_for_time(full_data);
+
+
 shuff_data = full_data(randperm(numel(full_data)));
 data = shuff_data{1};
 [test_X,test_Y,train_X,train_Y] = split_data(data(:,1:3),data(:,4:4),0.8);
@@ -59,6 +63,29 @@ function[test_X,test_y,train_X,train_y] = split_data(features,class_labels,perc)
     test_X  = features(test_start:test_end,:);
     test_y  = class_labels(test_start:test_end,:);
 
+end
+
+function time_normalized_data = normalize_for_time(full_data)
+    time_normalized_data = {};
+    smallest_length = 19;
+    % Loop through all the digits
+    for i = 1:length(full_data)
+        %% Normalize for time
+
+        % floor(linespace from 1 to size(full_data{i} with 21 steps) + 1
+        indices = floor(linspace(1, size(full_data{i},1), smallest_length)) + 1;
+        %f = (size(full_data{i},1));
+        %min_size = min(f(1,:))
+        data_matrix = zeros(smallest_length,4);
+        % Loop through all the rows in the digit matrix
+        for j = 1:smallest_length
+            debug = full_data{i}(j,:);
+            data_matrix(j,:) = full_data{i}(j,:);
+            % use the result from the previous line as the index
+            time_normalized_data{i} = data_matrix;
+        end
+        % set time_normalized_data{i}
+    end
 end
 
 %test = preprocessing(stroke_0_0001,0);
