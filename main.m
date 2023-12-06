@@ -11,7 +11,7 @@ file_names = files.Files;
 num_files = length(file_names);
 full_data = {};
 
-k = 10;
+k = 3;
 
 for i = 1:num_files
     sample = load(file_names{i});
@@ -23,6 +23,8 @@ for i = 1:num_files
     %sample.pos(:,3:3) = temp_sample(:,2:2);
     sample.pos(:,end+1:end+1) = [diff(sample.pos(:,1:1)); 0];
     sample.pos(:,end+1:end+1) = [diff(sample.pos(:,2:2)); 0];
+    %sample.pos(:,end+1:end+1) = [0;diff(diff(sample.pos(:,1:1))); 0];
+    %sample.pos(:,end+1:end+1) = [0;diff(diff(sample.pos(:,2:2))); 0];
     sample = preprocessing(sample.pos,0);
     %ceil(i/100)-1 -> add class - name corresponds to written number
     full_data{i} = [sample, (ceil(i/100))*ones(size(sample,1),1)];   
@@ -76,11 +78,11 @@ end
 
 function time_normalized_data = normalize_for_time(full_data)
     time_normalized_data = {};
-    smallest_length = 19;
+    smallest_length = 19;   % TODO: CHANGE TO BE DYNAMIC
     % Loop through all the digits
     for i = 1:length(full_data)
         %% Normalize for time
-
+        disp(i)
         % floor(linespace from 1 to size(full_data{i} with 21 steps) + 1
         indices = floor(linspace(1, size(full_data{i},1), smallest_length)) + 1;
         %f = (size(full_data{i},1));
@@ -89,6 +91,8 @@ function time_normalized_data = normalize_for_time(full_data)
         % Loop through all the rows in the digit matrix
         for j = 1:smallest_length
             debug = full_data{i}(j,:);
+            temp1 = data_matrix(j,:);
+            temp2 = full_data{i}(j,:);
             data_matrix(j,:) = full_data{i}(j,:);
             % use the result from the previous line as the index
             time_normalized_data{i} = data_matrix;

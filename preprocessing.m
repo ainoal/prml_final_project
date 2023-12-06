@@ -18,7 +18,7 @@ end
 
 
 function [data_out] = skew_data(data,min_thet,max_thet)
-    vel_data = data(:,4:5);
+    vel_data = data(:,4:size(data,2));
     data = data(:,1:3);
     theta = min_thet+((max_thet-min_thet).*(rand));
     R = [cos(theta) -sin(theta) 0;
