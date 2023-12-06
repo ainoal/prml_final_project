@@ -2,7 +2,7 @@
 % Final Project
 clc;
 clear;
-%rng("default");
+rng("default");
 %load("digits_3d\training_data\stroke_0_0001.csv")
 
 % Reading directory
@@ -14,7 +14,7 @@ full_data = {};
 % READING TEST DATA
 % test_X =    LOAD YOUR TEST DATA HERE
 
-k = 3;
+k = 9;
 
 for i = 1:num_files
     sample = load(file_names{i});
@@ -25,17 +25,27 @@ for i = 1:num_files
     % Add class in the data
     full_data{i} = [sample, (ceil(i/100))*ones(size(sample,1),1)];   
 end
-
-for i = 1:num_files
-    sample = preprocessing(full_data{i},1);
-    full_data{num_files+i} = [sample, (ceil(i/100))*ones(size(sample,1),1)]; 
+shuff_data=full_data(randperm(numel(full_data)));
+training_data = shuff_data(1:0.8*length(full_data));
+test_data = shuff_data(length(training_data)+1:end);
+for i = 1:length(training_data)
+    sample = preprocessing(training_data{i},1);
+    training_data{length(training_data)+1} = [sample, (ceil(i/100))*ones(size(sample,1),1)]; 
 end
 
-time_normalized_data = normalize_for_time(full_data);
+time_normalized_data = normalize_for_time(training_data);
 flat_data = flatten_data(time_normalized_data);
 merged_data = merge_data(flat_data);
-shuff_data = merged_data(randperm(numel(merged_data)));
-[test_X,test_Y,train_X,train_Y] = split_data(merged_data(:,1:end-1),merged_data(:,end:end),0.8);
+
+time_normalized_test = normalize_for_time(test_data);
+flat_test = flatten_data(time_normalized_test);
+merged_test = merge_data(flat_test);
+test_X = merged_test(:,1:end-1);
+test_Y = merged_test(:,end:end);
+%shuff_data = merged_data(randperm(numel(merged_data)));
+%[test_X,test_Y,train_X,train_Y] = split_data(merged_data(:,1:end-1),merged_data(:,end:end),0.8);
+train_X = merged_data(:,1:end-1);
+train_Y = merged_data(:,end:end);
 class_res = classification(train_Y,train_X,test_X,k);
 acc = calc_err(class_res,test_Y);
 
@@ -77,9 +87,9 @@ function time_normalized_data = normalize_for_time(full_data)
         data_matrix = zeros(smallest_length,6);
         % Loop through all the rows in the digit matrix
         for j = 1:smallest_length
-            debug = full_data{i}(j,:);
-            temp1 = data_matrix(j,:);
-            temp2 = full_data{i}(j,:);
+            %debug = full_data{i}(j,:);
+            %temp1 = data_matrix(j,:);
+            %temp2 = full_data{i}(j,:);
             data_matrix(j,:) = full_data{i}(j,:);
             % use the previous result as the index
             time_normalized_data{i} = data_matrix;
