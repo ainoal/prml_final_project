@@ -18,9 +18,9 @@ for i = 1:num_files
     % Y and Z are switched to what would be intuitive!
     % Therefore they are switched right away to make the code more
     % understandable
-    temp_sample = sample.pos;
-    sample.pos(:,2:2) = temp_sample(:,3:3);
-    sample.pos(:,3:3) = temp_sample(:,2:2);
+    %temp_sample = sample.pos;
+    %sample.pos(:,2:2) = temp_sample(:,3:3);
+    %sample.pos(:,3:3) = temp_sample(:,2:2);
     sample.pos(:,end+1:end+1) = [diff(sample.pos(:,1:1)); 0];
     sample.pos(:,end+1:end+1) = [diff(sample.pos(:,2:2)); 0];
     sample = preprocessing(sample.pos,0);
@@ -102,7 +102,7 @@ function [flat_data] =  flatten_data(data_cell_array)
     for i = 1:length(data_cell_array)
         data = data_cell_array{i};
         data = data(:,1:5);
-        %data(:,3:3) = [];
+        data(:,3:3) = [];
         label = data_cell_array{i}(1,6);
         flat_data{i} = reshape(data',1,[]);
         flat_data{i}(1,end+1) = label;
