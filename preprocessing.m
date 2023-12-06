@@ -1,7 +1,7 @@
 
 function [data_out] = preprocessing(data,skew_mode)
-    min_skew_angle = -35;
-    max_skew_angle = 35;
+    min_skew_angle = deg2rad(-5);
+    max_skew_angle = deg2rad(5);
     
     if skew_mode == 1
         data_out=skew_data(data(:,1:size(data,2)-1),min_skew_angle,max_skew_angle);

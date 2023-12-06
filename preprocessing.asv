@@ -1,15 +1,14 @@
 
 function [data_out] = preprocessing(data,skew_mode)
-    min_skew_angle = -45;
-    max_skew_angle = 45;
+    min_skew_angle = -;
+    max_skew_angle = 35;
     
     if skew_mode == 1
         data_out=skew_data(data(:,1:size(data,2)-1),min_skew_angle,max_skew_angle);
         
     else
-    
         data_out = normalize(data,1);
-
+    end
 end
 
 
