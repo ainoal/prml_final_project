@@ -7,10 +7,15 @@ function [data_out] = preprocessing(data,skew_mode)
         data_out=skew_data(data(:,1:size(data,2)-1),min_skew_angle,max_skew_angle);
         
     else
-        data_out=data;
-        %data_out(:,1:1)=smoothdata(data_out(:,1:1));
-        %data_out(:,2:2)=smoothdata(data_out(:,2:2));
-        %data_out(:,3:3)=smoothdata(data_out(:,3:3));
+        %data_out=pcdenoise(pointCloud(data));
+        data_out = data;
+        % Window size of 5 and 7 deliver the best results
+        window = 5;
+        b =(1/window)*ones(1,window);
+        a=1;
+        data_out(:,1:1)=filter(b,a,data_out(:,1:1));
+        data_out(:,2:2)=filter(b,a,data_out(:,2:2));
+        data_out(:,3:3)=filter(b,a,data_out(:,3:3));
         data_out = normalize(data_out,1);
     end
 end
