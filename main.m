@@ -21,6 +21,8 @@ for i = 1:num_files
     temp_sample = sample.pos;
     sample.pos(:,2:2) = temp_sample(:,3:3);
     sample.pos(:,3:3) = temp_sample(:,2:2);
+    sample.pos(:,end+1:end+1) = [diff(sample.pos(:,1:1)); 0];
+    sample.pos(:,end+1:end+1) = [diff(sample.pos(:,2:2)); 0];
     sample = preprocessing(sample.pos,0);
     %ceil(i/100)-1 -> add class - name corresponds to written number
     full_data{i} = [sample, (ceil(i/100))*ones(size(sample,1),1)];   
@@ -83,7 +85,7 @@ function time_normalized_data = normalize_for_time(full_data)
         indices = floor(linspace(1, size(full_data{i},1), smallest_length)) + 1;
         %f = (size(full_data{i},1));
         %min_size = min(f(1,:))
-        data_matrix = zeros(smallest_length,4);
+        data_matrix = zeros(smallest_length,6);
         % Loop through all the rows in the digit matrix
         for j = 1:smallest_length
             debug = full_data{i}(j,:);
@@ -94,14 +96,14 @@ function time_normalized_data = normalize_for_time(full_data)
         % set time_normalized_data{i}
     end
 end
-
+%Make flat data dynamic!
 function [flat_data] =  flatten_data(data_cell_array)
     flat_data = [];
     for i = 1:length(data_cell_array)
         data = data_cell_array{i};
-        data = data(:,1:3);
-        data(:,2:2) = [];
-        label = data_cell_array{i}(1,4);
+        data = data(:,1:5);
+        %data(:,3:3) = [];
+        label = data_cell_array{i}(1,6);
         flat_data{i} = reshape(data',1,[]);
         flat_data{i}(1,end+1) = label;
     end    

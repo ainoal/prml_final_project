@@ -16,7 +16,12 @@ k = 10;
 for i = 1:num_files
     sample = load(file_names{i});
     % Y and Z are switched to what would be intuitive!
-    % Therefore they are swi
+    % Therefore they are switched right away to make the code more
+    % understandable
+    temp_sample = sample.pos;
+    sample.pos(:,2:2) = temp_sample(:,3:3);
+    sample.pos(:,3:3) = temp_sample(:,2:2);
+    temp = sample.pos(:,3:3);
     sample = preprocessing(sample.pos,0);
     %ceil(i/100)-1 -> add class - name corresponds to written number
     full_data{i} = [sample, (ceil(i/100))*ones(size(sample,1),1)];   
@@ -31,6 +36,7 @@ end
 
 %full_data = normalize_for_time(full_data);
 time_normalized_data = normalize_for_time(full_data);
+
 flat_data = flatten_data(time_normalized_data);
 merged_data = merge_data(flat_data);
 shuff_data = merged_data(randperm(numel(merged_data)));
@@ -39,7 +45,13 @@ class_res = classification(train_Y,train_X,test_X,k);
 acc = calc_err(class_res,test_Y);
 %class_res = classification()
 
-
+function [output] = intr_velocity(data)
+    for i = 1:length(data)
+        for j = size(data{i},1)
+            
+        end
+    end
+end
 function [acc] = calc_err(testclass,control)
     true = 0;
     false = 0;
@@ -103,9 +115,8 @@ function [flat_data] =  flatten_data(data_cell_array)
     end    
 end
 
-function[merged_data] = merge_data(flat_data)
-    merged_data=[];
-    for i = 1:length(flat_data)
+function[ext_data_set] = merge_data(data_set)
+    for i = 1:size(
         merged_data(i,:) = flat_data{i};
     end
 end
