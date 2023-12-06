@@ -15,6 +15,12 @@ k = 10;
 
 for i = 1:num_files
     sample = load(file_names{i});
+    % Y and Z are switched to what would be intuitive!
+    % Therefore they are switched right away to make the code more
+    % understandable
+    temp_sample = sample.pos;
+    sample.pos(:,2:2) = temp_sample(:,3:3);
+    sample.pos(:,3:3) = temp_sample(:,2:2);
     sample = preprocessing(sample.pos,0);
     %ceil(i/100)-1 -> add class - name corresponds to written number
     full_data{i} = [sample, (ceil(i/100))*ones(size(sample,1),1)];   
@@ -24,6 +30,8 @@ for i = 1:num_files
     sample = preprocessing(full_data{i},1);
     full_data{num_files+i} = [sample, (ceil(i/100))*ones(size(sample,1),1)]; 
 end
+
+
 
 %full_data = normalize_for_time(full_data);
 time_normalized_data = normalize_for_time(full_data);

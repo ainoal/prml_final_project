@@ -7,6 +7,10 @@ function [data_out] = preprocessing(data,skew_mode)
         data_out=skew_data(data(:,1:size(data,2)-1),min_skew_angle,max_skew_angle);
         
     else
+        %data_out=data;
+        %data_out(:,1:1)=smoothdata(data_out(:,1:1),'gaussian');
+        %data_out(:,2:2)=smoothdata(data_out(:,2:2),'gaussian');
+        %data_out(:,3:3)=smoothdata(data_out(:,3:3),'gaussian');
         data_out = normalize(data,1);
     end
 end
