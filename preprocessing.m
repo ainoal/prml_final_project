@@ -16,6 +16,15 @@ function [data_out] = preprocessing(data,skew_mode)
         data_out(:,1:1)=filter(b,a,data_out(:,1:1));
         data_out(:,2:2)=filter(b,a,data_out(:,2:2));
         data_out(:,3:3)=filter(b,a,data_out(:,3:3));
+        
+        data2d=data_out(:,1:2);
+        % Best results achieved by using moving mean for each coordinate
+        % set and then appliying lowpass filter over second dimension across coordinates
+        b2 = 1;
+        a2 = [1 -0.8];
+        data2d = filter(b2,a2,data2d,[],2);
+        data_out(:,1:2) =data2d;
+
         data_out = normalize(data_out,1);
     end
 end

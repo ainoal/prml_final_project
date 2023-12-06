@@ -2,7 +2,7 @@
 % Final Project
 clc;
 clear;
-rng("default");
+%rng("default");
 %load("digits_3d\training_data\stroke_0_0001.csv")
 
 % Reading directory
