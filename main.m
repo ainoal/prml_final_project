@@ -1,5 +1,8 @@
 % Pattern Recognition and Machine Learning
 % Final Project
+
+% DEMO FOR VALIDATION OF THE MODEL
+
 clc;
 clear;
 rng("default");
@@ -83,14 +86,15 @@ function time_normalized_data = normalize_for_time(full_data)
     % Loop through all the digits
     for i = 1:length(full_data)
         disp(i)
-        indices = floor(linspace(1, size(full_data{i},1), smallest_length)) + 1;
+        indices = floor(linspace(1, size(full_data{i},1), smallest_length));
         data_matrix = zeros(smallest_length,6);
         % Loop through all the rows in the digit matrix
         for j = 1:smallest_length
             %debug = full_data{i}(j,:);
             %temp1 = data_matrix(j,:);
             %temp2 = full_data{i}(j,:);
-            data_matrix(j,:) = full_data{i}(j,:);
+            temp1 = indices(j);
+            data_matrix(j,:) = full_data{i}(indices(j),:);
             % use the previous result as the index
             time_normalized_data{i} = data_matrix;
         end
@@ -116,6 +120,3 @@ function[merged_data] = merge_data(flat_data)
         merged_data(i,:) = flat_data{i};
     end
 end
-
-%test = preprocessing(stroke_0_0001,0);
-%test_skew = preprocessing(stroke_0_0001,1);
