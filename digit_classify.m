@@ -1,12 +1,12 @@
 
-function C = digit_classify()   % REMEMBER TO ADD TESTDATA AS INPUT VARIABLE
+function C = digit_classify(testdata) 
     clc;
     clear;
 
     k = 9;
 
-    testdata = load("digits\training_data\stroke_0_0001.mat");
-    testdata = testdata.pos;
+    %testdata = load("digits\training_data\stroke_8_0012.mat");
+    %testdata = testdata.pos;
 
     testdata = preprocessing(testdata, 0);
 
@@ -21,24 +21,26 @@ function C = digit_classify()   % REMEMBER TO ADD TESTDATA AS INPUT VARIABLE
 
     training_data = file_processing(smallest_length);
 
-
+    
     % Calculate acceleration in x and y dimensions for the test data
     testdata(:,end+1:end+1) = [diff(testdata(:,1:1)); 0];
     testdata(:,end+1:end+1) = [diff(testdata(:,2:2)); 0];
-
+    %Padding testdata with fake class 0 to match dimensions in function 
+    testdata = [testdata zeros(size(testdata,1),1)];
     test_data_cell = [];
     test_data_cell{1} = testdata;
-
+   
     time_normalized_test = normalize_for_time(test_data_cell, smallest_length);
-    %flat_test = flatten_data(time_normalized_test);
-    %merged_test = merge_data(flat_test);
+    flat_test = flatten_data(time_normalized_test);
+    merged_test = merge_data(flat_test);
 
-    %test_X = merged_test(:,1:end-1);
-    %test_Y = merged_test(:,end:end);
+    test_X = merged_test(:,1:end-1);
+    test_Y = merged_test(:,end:end);
 
-    %train_X = merged_data(:,1:end-1);
-    %train_Y = merged_data(:,end:end);
-    %class_res = classification(train_Y,train_X,test_X,k);
+    train_X = training_data(:,1:end-1);
+    train_Y = training_data(:,end:end);
+    class_res = classification(train_Y,train_X,test_X,k);
+    C = class_res - 1
 end
 
 function merged_data = file_processing(smallest_length)

@@ -1,6 +1,6 @@
 
 function [data_out] = preprocessing(data,skew_mode)
-    min_skew_angle = deg2rad(-5);
+    min_skew_angle = deg2rad(-6);
     max_skew_angle = deg2rad(5);
     
     if skew_mode == 1
@@ -32,8 +32,7 @@ function [data_out] = preprocessing(data,skew_mode)
         b1 = [1 0.9];
         a1 = 1;
         data2d = filter(b1,a1,data2d,[],1);
-        window = 5;
-        
+
 
 
         data_out(:,1:2) = data2d;
