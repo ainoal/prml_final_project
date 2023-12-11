@@ -1,7 +1,9 @@
 % Pattern Recognition and Machine Learning
 % Final Project
 
-% DEMO FOR VALIDATION OF THE MODEL
+% DEMO FOR VALIDATION OF THE MODEL. THIS FILE HAS BEEN USED FOR TRAINING
+% AND VALIDATION, BUT IS NOT USED WHEN THE FUNCTION digit_classify(testdata) 
+% IS CALLED.
 
 clc;
 clear;
@@ -13,9 +15,6 @@ files = fileDatastore('digits\training_data\*.mat','ReadFcn',@importdata);
 file_names = files.Files;
 num_files = length(file_names);
 full_data = {};
-
-% READING TEST DATA
-% test_X =    LOAD YOUR TEST DATA HERE
 
 k = 9;
 
@@ -82,7 +81,7 @@ end
 % Make all the matrices the same length
 function time_normalized_data = normalize_for_time(full_data)
     time_normalized_data = {};
-    smallest_length = 19;   % TODO: CHANGE TO BE DYNAMIC
+    smallest_length = 19;
     % Loop through all the digits
     for i = 1:length(full_data)
         disp(i)
@@ -90,18 +89,14 @@ function time_normalized_data = normalize_for_time(full_data)
         data_matrix = zeros(smallest_length,6);
         % Loop through all the rows in the digit matrix
         for j = 1:smallest_length
-            %debug = full_data{i}(j,:);
-            %temp1 = data_matrix(j,:);
-            %temp2 = full_data{i}(j,:);
             temp1 = indices(j);
             data_matrix(j,:) = full_data{i}(indices(j),:);
             % use the previous result as the index
             time_normalized_data{i} = data_matrix;
         end
-        % set time_normalized_data{i}
     end
 end
-%Make flat data dynamic!
+
 function [flat_data] =  flatten_data(data_cell_array)
     flat_data = [];
     for i = 1:length(data_cell_array)

@@ -1,13 +1,9 @@
 
-function C = digit_classify()   % REMEMBER TO ADD TESTDATA AS INPUT VARIABLE
-    clc;
-    clear;
-
+function C = digit_classify(testdata) 
     k = 9;
 
-    testdata = load("digits\training_data\");
-    testdata = testdata.pos;
-
+    % Normalization and filtering of the test digit - Rotation mode = 0 -> No
+    % rotation is added
     testdata = preprocessing(testdata, 0);
 
     % The matrix with the least rows in the training data has 19 rows.
@@ -29,90 +25,106 @@ function C = digit_classify()   % REMEMBER TO ADD TESTDATA AS INPUT VARIABLE
     testdata = [testdata zeros(size(testdata,1),1)];
     test_data_cell = [];
     test_data_cell{1} = testdata;
-   
+    %Next four steps are preparing the testdata and bring it into format
+    %suitable to apply k nearest neighbours
     time_normalized_test = normalize_for_time(test_data_cell, smallest_length);
     flat_test = flatten_data(time_normalized_test);
     merged_test = merge_data(flat_test);
-
     test_X = merged_test(:,1:end-1);
-    test_Y = merged_test(:,end:end);
-
+    
+    %Splitting classes from actual training data
     train_X = training_data(:,1:end-1);
     train_Y = training_data(:,end:end);
-    class_res = classification(train_Y,train_X,test_X,k);
+    
+    %Actual classification process using k nearest neighbours
+    class_res = classification(train_Y, train_X, test_X, k);
+
     C = class_res - 1
 end
 
 function merged_data = file_processing(smallest_length)
-    % Reading directory
+    % Function reads training_data directory  and outpus data as matrix in fitting format
+    % for later processing. Matlab directory needs to be set to root folder
+    % of project
     files = fileDatastore('digits\training_data\*.mat','ReadFcn',@importdata);
     file_names = files.Files;
     num_files = length(file_names);
     full_data = {};
-    
+    % Reading and preprocessing of each training file
     for i = 1:num_files
         sample = load(file_names{i});
         sample.pos(:,end+1:end+1) = [diff(sample.pos(:,1:1)); 0];
         sample.pos(:,end+1:end+1) = [diff(sample.pos(:,2:2)); 0];
+        %Normalization and filtering of training data, no rotation added
+        %yet
         sample = preprocessing(sample.pos,0);
     
-        % Add class in the data
+        % Add class to the data
         full_data{i} = [sample, (ceil(i/100))*ones(size(sample,1),1)];   
     end
+
+    %shuffling of training samples, to not negatively affect nearest neighbour results
+    %when adding rotated digits later
     training_data=full_data(randperm(numel(full_data)));
+    
+    
     for i = 1:length(training_data)
+        % This time for preprocessing: Rotation mode = 1, Creation of samples rotated by random angle (range defined in
+        %preprocessing function)
         sample = preprocessing(training_data{i},1);
         training_data{length(training_data)+1} = [sample, (ceil(i/100))*ones(size(sample,1),1)]; 
     end
-    
+    % Unifying amount of datapoints withing each digit using normalize for
+    % time function
     time_normalized_data = normalize_for_time(training_data, smallest_length);
+    %Cell array format is not suitable for knn, therefore the dataformat is
+    %now adjusted in two steps
     flat_data = flatten_data(time_normalized_data);
     merged_data = merge_data(flat_data);
 end
 
-% Make all the matrices the same length
+
 function time_normalized_data = normalize_for_time(full_data, smallest_length)
+    % Make all the matrices the same length, based on digit with smallest amount of
+    % data points/either from training set or input (Smallest length)
     time_normalized_data = {};
 
     % Loop through all the digits
     for i = 1:length(full_data)
         disp(i)
+        % Pick time-wise uniformly distributed data points from each sample
         indices = floor(linspace(1, size(full_data{i},1), smallest_length));
         data_matrix = zeros(smallest_length,6);
         % Loop through all the rows in the digit matrix
         for j = 1:smallest_length
-            %temp = full_data{i}(indices(j),:);
-            %temp2 = data_matrix(j,:);
             data_matrix(j,:) = full_data{i}(indices(j),:);
-            % use the previous result as the index
             time_normalized_data{i} = data_matrix;
         end
     end
 end
 
-%{
-function time_normalized_test = normalize_test_data(test_data, smallest_length)
-    indices = floor(linspace(1, size(test_data,1), smallest_length));
-    time_normalized_test = zeros(smallest_length, 6);
-    for j = 1:smallest_length
-        time_normalized_test(j,:) = test_data(indices(j),:);
-    end
-end
-%}
 
 function [flat_data] =  flatten_data(data_cell_array)
+    %Input: Cell list with mxn matrix entries, Output: Cell list with 1xp matrix entries
+    % Changes the matrizes within the cells from mxn into a flat 1xp format
+    % with removed z data
     flat_data = [];
     for i = 1:length(data_cell_array)
         data = data_cell_array{i};
         data = data(:,1:5);
+        %remove z data as it is not relevant for classifying the digit/might
+        %even interfere
         data(:,3:3) = [];
         label = data_cell_array{i}(1,6);
+        %Flattening of data
         flat_data{i} = reshape(data',1,[]);
         flat_data{i}(1,end+1) = label;
     end    
 end
 
 function[merged_data] = merge_data(flat_data)
+    %Input: 1xn Cell list with flattened sample entries, Output: mxn matrix,
+    %m= amount of samples, n = amount of features
     merged_data=[];
     for i = 1:length(flat_data)
         merged_data(i,:) = flat_data{i};
